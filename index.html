@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="An interactive read-along adventure where Johnny and Pixel build a rocket and explore Mars."
+    />
+    <title>Johnny Builds to Mars | PageSprout</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-glow page-glow-left" aria-hidden="true"></div>
+    <div class="page-glow page-glow-right" aria-hidden="true"></div>
+
+    <main class="reader-shell">
+      <header class="reader-header">
+        <a class="brand" href="#cover" aria-label="PageSprout home">
+          <span class="brand-mark" aria-hidden="true">✦</span>
+          <span>PageSprout</span>
+        </a>
+
+        <div class="reader-title" aria-live="polite">
+          <span class="reader-title-label">Read-along adventure</span>
+          <span class="reader-title-name">Johnny Builds to Mars</span>
+        </div>
+
+        <div class="reader-actions">
+          <div class="progress-wrap" aria-label="Story progress">
+            <div class="progress-track"><span id="progressFill"></span></div>
+            <span id="progressText">Start here</span>
+          </div>
+          <button class="reset-button" id="resetButton" type="button">Reset story</button>
+        </div>
+      </header>
+
+      <section class="book-stage" id="bookStage" tabindex="0" aria-label="Johnny Builds to Mars">
+        <div class="story-scene scene-cover active" data-page="0" aria-hidden="false">
+          <div class="cover-art" aria-hidden="true">
+            <div class="cover-sun"></div>
+            <div class="cover-rainbow rainbow-one"></div>
+            <div class="cover-rainbow rainbow-two"></div>
+            <div class="cover-star star-one">✦</div>
+            <div class="cover-star star-two">✦</div>
+            <div class="cover-star star-three">✧</div>
+            <div class="cover-planet planet-earth"><span>🌎</span></div>
+            <div class="cover-planet planet-mars"><span>🔴</span></div>
+            <div class="cover-rocket">
+              <div class="rocket-window">☺</div>
+              <div class="rocket-fin fin-left"></div>
+              <div class="rocket-fin fin-right"></div>
+              <div class="rocket-flame"></div>
+            </div>
+            <div class="cover-cloud cloud-one"></div>
+            <div class="cover-cloud cloud-two"></div>
+          </div>
+
+          <div class="cover-copy">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> an interactive read-along</p>
+            <h1>Johnny <span>Builds</span><br />to Mars</h1>
+            <p class="cover-description">
+              Turn the pages. Dig up rocket parts. Build the ship. Blast off!
+            </p>
+            <button class="primary-action cover-action" type="button" data-goto="1">
+              Start the adventure <span aria-hidden="true">→</span>
+            </button>
+            <p class="cover-tip"><span aria-hidden="true">✦</span> Read, play, explore</p>
+          </div>
+        </div>
+
+        <div class="story-scene scene-story" data-page="1" aria-hidden="true">
+          <div class="story-copy">
+            <p class="page-kicker"><span>Page 1</span> · A big idea</p>
+            <h2>Johnny was bored.<br /><em>Then—whoosh!</em></h2>
+            <p class="story-text">
+              Johnny and Pixel are packing inside the house for the big trip. Drag food, snacks, water, and two blankets into the box, then drag the tape onto it.
+            </p>
+            <div class="quote-card">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <div>
+                <strong>Let's build a rocket!</strong>
+                <span>Pixel's tail went swish-swish.</span>
+              </div>
+            </div>
+            <div class="collection-card packing-card">
+              <div class="collection-heading"><span>Packing list</span><strong id="packingCount">0 / 5</strong></div>
+              <div class="mini-progress" aria-hidden="true"><span id="packingProgress"></span></div>
+              <p id="packingMessage">Drag the supplies into the box.</p>
+            </div>
+            <button class="secondary-action scene-action" id="packingNext" type="button" data-goto="2" disabled>
+              Find the rocket parts <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="illustration walk-yard pack-house" aria-label="Johnny and Pixel packing supplies inside their house">
+            <div class="sun-disc"></div>
+            <div class="cloud cloud-a"><span></span><span></span></div>
+            <div class="cloud cloud-b"><span></span><span></span></div>
+            <div class="hill hill-back"></div>
+            <div class="hill hill-front"></div>
+            <div class="path"></div>
+            <div class="flower flower-a">✿</div>
+            <div class="flower flower-b">✿</div>
+            <div class="flower flower-c">✿</div>
+            <div class="walk-character johnny-character">
+              <div class="thought-bubble"><span>?</span><i></i><i></i></div>
+              <div class="character-head"><span class="hair"></span><span class="face">•ᴗ•</span></div>
+              <div class="character-body"><span class="shirt-star">✦</span></div>
+              <div class="character-leg leg-one"></div><div class="character-leg leg-two"></div>
+            </div>
+            <div class="walk-character pixel-character">
+              <div class="dog-ear ear-left"></div><div class="dog-ear ear-right"></div>
+              <div class="dog-face"><span>•ᴥ•</span></div>
+              <div class="dog-body"></div><div class="dog-tail"></div>
+              <div class="dog-leg dog-leg-one"></div><div class="dog-leg dog-leg-two"></div>
+            </div>
+            <div class="pack-box" id="packBox" aria-label="Packing box">
+              <div class="pack-box-handle"></div>
+              <div class="pack-loaded-items" id="packLoadedItems" aria-label="Supplies inside the box"></div>
+              <div class="pack-seal" aria-hidden="true"></div>
+              <span class="pack-box-label">TRIP PACK</span>
+            </div>
+            <button class="pack-item pack-food" type="button" draggable="true" data-pack="food" aria-label="Pack food">
+              <span class="pack-icon" aria-hidden="true"></span><span>Food</span>
+            </button>
+            <button class="pack-item pack-snacks" type="button" draggable="true" data-pack="snacks" aria-label="Pack snacks">
+              <span class="pack-icon" aria-hidden="true"></span><span>Snacks</span>
+            </button>
+            <button class="pack-item pack-water" type="button" draggable="true" data-pack="water" aria-label="Pack water">
+              <span class="pack-icon" aria-hidden="true"></span><span>Water</span>
+            </button>
+            <button class="pack-item pack-blanket-one" type="button" draggable="true" data-pack="blanket-one" aria-label="Pack the first blanket">
+              <span class="pack-icon" aria-hidden="true"></span><span>Blanket 1</span>
+            </button>
+            <button class="pack-item pack-blanket-two" type="button" draggable="true" data-pack="blanket-two" aria-label="Pack the second blanket">
+              <span class="pack-icon" aria-hidden="true"></span><span>Blanket 2</span>
+            </button>
+            <button class="pack-item pack-tape" id="packTape" type="button" draggable="true" data-pack="tape" aria-label="Tape the packed supplies shut" hidden>
+              <span class="pack-icon" aria-hidden="true"></span><span>Tape it!</span>
+            </button>
+            <span class="yard-label">inside Johnny's house...</span>
+          </div>
+        </div>
+
+        <div class="story-scene scene-dig" data-page="2" aria-hidden="true">
+          <div class="story-copy">
+            <p class="page-kicker"><span>Page 2</span> · Dig, dig, dig!</p>
+            <h2>The backyard had<br /><em>five secret spots.</em></h2>
+            <p class="story-text">
+              Tap an <strong class="inline-x">X</strong> to dig. Find every piece for Johnny's rocket.
+            </p>
+            <div class="collection-card">
+              <div class="collection-heading">
+                <span>Rocket parts</span>
+                <strong id="partsCount">0 / 5</strong>
+              </div>
+              <div class="mini-progress" aria-hidden="true"><span id="partsProgress"></span></div>
+              <p id="digMessage">Which X should we try first?</p>
+            </div>
+            <button class="secondary-action scene-action" id="digNext" type="button" data-goto="3" disabled>
+              Build the rocket <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="illustration dig-yard" id="digZone" aria-label="Backyard with five places to dig">
+            <div class="yard-sky"></div>
+            <div class="yard-fence"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="yard-tree"><div class="tree-crown"></div><div class="tree-trunk"></div></div>
+            <div class="yard-grass"></div>
+            <div class="yard-sun"></div>
+            <div class="yard-bush bush-a"></div><div class="yard-bush bush-b"></div>
+            <div class="dig-character" aria-label="Johnny and Pixel in the backyard">
+              <div class="mini-johnny" aria-hidden="true">
+                <div class="mini-johnny-head"><span class="mini-hair"></span><span class="mini-face">•ᴗ•</span></div>
+                <div class="mini-johnny-body"><span>✦</span></div>
+                <div class="mini-leg mini-leg-one"></div><div class="mini-leg mini-leg-two"></div>
+              </div>
+              <div class="mini-pixel" aria-hidden="true">
+                <div class="mini-dog-ear mini-ear-left"></div><div class="mini-dog-ear mini-ear-right"></div>
+                <div class="mini-dog-face"><span>•ᴥ•</span></div>
+                <div class="mini-dog-body"></div><div class="mini-dog-tail"></div>
+                <div class="mini-dog-leg mini-dog-leg-one"></div><div class="mini-dog-leg mini-dog-leg-two"></div>
+              </div>
+            </div>
+            <button class="dig-spot spot-one" type="button" data-part="nose" aria-label="Dig here for the nose cone">
+              <span class="x-mark">×</span><span class="dig-label">dig</span>
+              <span class="dug-part part-art part-nose" aria-hidden="true"></span>
+            </button>
+            <button class="dig-spot spot-two" type="button" data-part="window" aria-label="Dig here for the rocket window">
+              <span class="x-mark">×</span><span class="dig-label">dig</span>
+              <span class="dug-part part-art part-window" aria-hidden="true"></span>
+            </button>
+            <button class="dig-spot spot-three" type="button" data-part="fin" aria-label="Dig here for a rocket fin">
+              <span class="x-mark">×</span><span class="dig-label">dig</span>
+              <span class="dug-part part-art part-fin" aria-hidden="true"></span>
+            </button>
+            <button class="dig-spot spot-four" type="button" data-part="flame" aria-label="Dig here for the rocket flame">
+              <span class="x-mark">×</span><span class="dig-label">dig</span>
+              <span class="dug-part part-art part-flame" aria-hidden="true"></span>
+            </button>
+            <button class="dig-spot spot-five" type="button" data-part="body" aria-label="Dig here for the rocket body">
+              <span class="x-mark">×</span><span class="dig-label">dig</span>
+              <span class="dug-part part-art part-body" aria-hidden="true"></span>
+            </button>
+            <div class="dig-sparkle sparkle-a">✦</div><div class="dig-sparkle sparkle-b">✦</div>
+          </div>
+        </div>
+
+        <div class="story-scene scene-build" data-page="3" aria-hidden="true">
+          <div class="story-copy">
+            <p class="page-kicker"><span>Page 3</span> · Make it fly</p>
+            <h2>Piece by piece,<br /><em>the rocket takes shape.</em></h2>
+            <p class="story-text">Drag each part to its glowing spot, or tap a part and then tap its spot.</p>
+            <div class="collection-card build-status-card">
+              <div class="collection-heading"><span>Build checklist</span><strong id="buildCount">0 / 6</strong></div>
+              <div class="mini-progress"><span id="buildProgress"></span></div>
+              <p id="buildMessage">The rocket is waiting for its first piece.</p>
+            </div>
+            <div class="parts-tray" id="partsTray" aria-label="Rocket parts to place">
+              <button class="part-card part-body-card" type="button" draggable="true" data-part="body" aria-label="Rocket body part">
+                <span class="part-art part-body" aria-hidden="true"></span><span>Rocket body</span>
+              </button>
+              <button class="part-card" type="button" draggable="true" data-part="nose" aria-label="Nose cone part">
+                <span class="part-art part-nose" aria-hidden="true"></span><span>Metal nose</span>
+              </button>
+              <button class="part-card" type="button" draggable="true" data-part="window" aria-label="Window part">
+                <span class="part-art part-window" aria-hidden="true"></span><span>Porthole</span>
+              </button>
+              <button class="part-card" type="button" draggable="true" data-part="fin-left" aria-label="Left stabilizer fin part">
+                <span class="part-art part-fin" aria-hidden="true"></span><span>Left fin</span>
+              </button>
+              <button class="part-card" type="button" draggable="true" data-part="fin-right" aria-label="Right stabilizer fin part">
+                <span class="part-art part-fin" aria-hidden="true"></span><span>Right fin</span>
+              </button>
+              <button class="part-card" type="button" draggable="true" data-part="flame" aria-label="Rocket flame part">
+                <span class="part-art part-flame" aria-hidden="true"></span><span>Engine flame</span>
+              </button>
+            </div>
+            <button class="secondary-action scene-action" id="buildNext" type="button" data-goto="4" disabled>
+              Continue to the launch pad <span aria-hidden="true">→</span>
+            </button>
+            <button class="draw-rocket-button" id="drawRocketButton" type="button" aria-controls="drawOverlay" aria-expanded="false">
+              Draw a rocket too <span aria-hidden="true">✎</span>
+            </button>
+          </div>
+
+          <div class="illustration build-bay" aria-label="Rocket blueprint with four glowing places for parts">
+            <div class="blueprint-grid"></div>
+            <div class="blueprint-title">ROCKET LAB <span>001</span></div>
+            <div class="rocket-blueprint">
+              <div class="slot slot-nose" data-part="nose" role="button" tabindex="0" aria-label="Nose cone drop spot"><span class="slot-art part-art part-nose" aria-hidden="true"></span></div>
+              <div class="slot slot-window" data-part="window" role="button" tabindex="0" aria-label="Window drop spot"><span class="slot-art part-art part-window" aria-hidden="true"></span></div>
+              <div class="slot slot-fin-left" data-part="fin-left" role="button" tabindex="0" aria-label="Left stabilizer fin drop spot"><span class="slot-art part-art part-fin" aria-hidden="true"></span></div>
+              <div class="slot slot-fin-right" data-part="fin-right" role="button" tabindex="0" aria-label="Right stabilizer fin drop spot"><span class="slot-art part-art part-fin" aria-hidden="true"></span></div>
+              <div class="slot slot-flame" data-part="flame" role="button" tabindex="0" aria-label="Flame drop spot"><span class="slot-art part-art part-flame" aria-hidden="true"></span></div>
+              <div class="slot slot-body" data-part="body" role="button" tabindex="0" aria-label="Rocket body drop spot"><span class="slot-art part-art part-body" aria-hidden="true"></span></div>
+              <div class="rocket-body-blueprint"></div>
+              <div class="rocket-line line-one"></div><div class="rocket-line line-two"></div>
+              <span class="blueprint-note note-one">A</span><span class="blueprint-note note-two">B</span>
+            </div>
+            <div class="build-sticker">BUILD<br /><span>BRAVE</span></div>
+            <div class="rocket-walk-scene" id="rocketWalkScene" hidden aria-label="Johnny and Pixel walking inside the finished rocket">
+              <div class="rocket-cabin-glow"></div>
+              <div class="cabin-porthole"><span></span></div>
+              <div class="cabin-panel cabin-panel-one"></div><div class="cabin-panel cabin-panel-two"></div>
+              <div class="cabin-floor"></div>
+              <div class="cabin-sign">MISSION CABIN</div>
+              <div class="rocket-walkers" aria-hidden="true">
+                <div class="mini-johnny"><div class="mini-johnny-head"><span class="mini-hair"></span><span class="mini-face">•ᴗ•</span></div><div class="mini-johnny-body"><span>✦</span></div><div class="mini-leg mini-leg-one"></div><div class="mini-leg mini-leg-two"></div></div>
+                <div class="mini-pixel"><div class="mini-dog-ear mini-ear-left"></div><div class="mini-dog-ear mini-ear-right"></div><div class="mini-dog-face"><span>•ᴥ•</span></div><div class="mini-dog-body"></div><div class="mini-dog-tail"></div><div class="mini-dog-leg mini-dog-leg-one"></div><div class="mini-dog-leg mini-dog-leg-two"></div></div>
+              </div>
+              <div class="walk-scene-caption">All aboard!</div>
+            </div>
+            <div class="draw-overlay" id="drawOverlay" hidden>
+              <div class="draw-header">
+                <div>
+                  <p class="draw-kicker">Creative lab</p>
+                  <h3>Draw your own rocket!</h3>
+                  <p>Use your finger or mouse. Add windows, fins, stars, and flames.</p>
+                  <div class="draw-step-card">
+                    <span id="drawStepNumber">Step 1 of 6</span>
+                    <strong id="drawStepTitle">Draw the rocket body</strong>
+                    <p id="drawStepInstruction">Start with one tall, rounded body in the middle.</p>
+                  </div>
+                </div>
+                <button class="draw-close" id="closeDrawButton" type="button">Back to builder</button>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="rocketCanvas" width="720" height="420" aria-label="Drawing pad for drawing a rocket"></canvas>
+                <span class="canvas-tip">Start drawing here!</span>
+              </div>
+              <div class="draw-tools">
+                <button class="draw-clear" id="clearDrawingButton" type="button">Clear drawing</button>
+                <span id="drawStatus">0 strokes</span>
+                <button class="draw-next" id="nextDrawStepButton" type="button">Next step <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+            <div class="draw-preview" id="drawPreview" hidden aria-label="Saved drawing of your rocket">
+              <div class="draw-preview-heading">
+                <div><span>Creative lab</span><strong>Your rocket!</strong></div>
+                <button class="draw-edit" id="editDrawingButton" type="button">Edit drawing</button>
+              </div>
+              <canvas id="rocketPreviewCanvas" width="720" height="420" aria-label="Your finished rocket drawing"></canvas>
+              <p>Nice work! Your rocket stays here while you keep reading.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-scene scene-launch" data-page="4" aria-hidden="true">
+          <div class="story-copy launch-copy">
+            <p class="page-kicker"><span>Page 4</span> · Three... two... one!</p>
+            <h2>Johnny and Pixel<br /><em>blasted off to Mars!</em></h2>
+            <p class="story-text">The engine is humming. Press launch and watch their biggest adventure begin.</p>
+            <button class="launch-button" id="launchButton" type="button">
+              <span class="launch-icon" aria-hidden="true">🚀</span>
+              <span id="launchButtonText">Launch the rocket</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <div class="launch-message" id="launchMessage" aria-live="polite">Engine check: ready when you are.</div>
+          </div>
+
+          <div class="illustration space-scene" id="spaceScene" aria-label="Rocket flying from Earth to Mars">
+            <div class="space-stars stars-a">✦　✧　✦</div>
+            <div class="space-stars stars-b">✧　✦　✧</div>
+            <div class="space-moon">☾</div>
+            <div class="earth-orbit"></div>
+            <div class="space-earth">🌎</div>
+            <div class="mars-orbit"></div>
+            <div class="mars-planet-large"><span>🔴</span><i></i><b></b></div>
+            <div class="rocket-flight" id="rocketFlight">
+              <div class="flight-rocket"><span class="flight-window">•ᴗ•</span><span class="flight-fin flight-fin-left"></span><span class="flight-fin flight-fin-right"></span><span class="flight-fire"></span></div>
+              <canvas class="drawn-flight-rocket" id="drawnFlightRocket" width="260" height="380" aria-label="Your drawn rocket" hidden></canvas>
+              <span class="flight-label">Johnny + Pixel</span>
+            </div>
+            <div class="mars-message" id="marsMessage" hidden>
+              <span class="mars-message-star">✦</span>
+              <strong>We made it!</strong>
+              <span>Now they are exploring Mars.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="story-scene scene-explore" data-page="5" aria-hidden="true">
+          <div class="story-copy explore-copy">
+            <p class="page-kicker"><span>Page 5</span> · Mars discoveries</p>
+            <h2>Mars is full of<br /><em>cool surprises.</em></h2>
+            <p class="story-text">Johnny and Pixel are exploring Mars. Walk around the 2D scene and find all 20 cool things.</p>
+            <div class="collection-card discovery-card">
+              <div class="collection-heading"><span>Discoveries</span><strong id="discoveryCount">0 / 20</strong></div>
+              <div class="mini-progress"><span id="discoveryProgress"></span></div>
+              <p id="discoveryMessage">Use the arrow keys or tap a direction to start exploring.</p>
+            </div>
+            <button class="end-button" id="endButton" type="button" disabled>
+              The End <span aria-hidden="true">✦</span>
+            </button>
+            <p class="end-hint" id="endHint">Find all 20 discoveries to finish the adventure.</p>
+          </div>
+
+          <div class="illustration mars-explore-scene" id="marsExploreScene" tabindex="0" aria-label="Johnny and Pixel exploring Mars. Use arrow keys or WASD to walk.">
+            <div class="explore-stars explore-stars-a">✦　✧　✦</div>
+            <div class="explore-stars explore-stars-b">✧　✦</div>
+            <div class="explore-mars-horizon"></div>
+            <div class="explore-crater crater-a"></div><div class="explore-crater crater-b"></div>
+            <div class="explore-rock rock-a"></div><div class="explore-rock rock-b"></div><div class="explore-rock rock-c"></div>
+            <div class="explorer-people" aria-hidden="true">
+              <div class="mini-johnny"><div class="mini-johnny-head"><span class="mini-hair"></span><span class="mini-face">•ᴗ•</span></div><div class="mini-johnny-body"><span>✦</span></div><div class="mini-leg mini-leg-one"></div><div class="mini-leg mini-leg-two"></div></div>
+              <div class="mini-pixel"><div class="mini-dog-ear mini-ear-left"></div><div class="mini-dog-ear mini-ear-right"></div><div class="mini-dog-face"><span>•ᴥ•</span></div><div class="mini-dog-body"></div><div class="mini-dog-tail"></div><div class="mini-dog-leg mini-dog-leg-one"></div><div class="mini-dog-leg mini-dog-leg-two"></div></div>
+            </div>
+            <button class="discovery-object discovery-thing thing-gem thing-01" type="button" data-discovery="rainbow-crystal" data-label="Rainbow crystal" data-x="12" data-y="27" aria-label="Discover a rainbow crystal"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Rainbow crystal</span></button>
+            <button class="discovery-object discovery-thing thing-fossil thing-02" type="button" data-discovery="space-fossil" data-label="Space fossil" data-x="31" data-y="25" aria-label="Discover a space fossil"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Space fossil</span></button>
+            <button class="discovery-object discovery-thing thing-sprout thing-03" type="button" data-discovery="mars-sprout" data-label="Mars sprout" data-x="50" data-y="25" aria-label="Discover a Mars sprout"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Mars sprout</span></button>
+            <button class="discovery-object discovery-thing thing-orb thing-04" type="button" data-discovery="ice-chip" data-label="Ice chip" data-x="69" data-y="27" aria-label="Discover an ice chip"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Ice chip</span></button>
+            <button class="discovery-object discovery-thing thing-star thing-05" type="button" data-discovery="star-shard" data-label="Star shard" data-x="87" data-y="24" aria-label="Discover a star shard"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Star shard</span></button>
+            <button class="discovery-object discovery-thing thing-gem thing-06" type="button" data-discovery="blue-mineral" data-label="Blue mineral" data-x="9" data-y="43" aria-label="Discover a blue mineral"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Blue mineral</span></button>
+            <button class="discovery-object discovery-thing thing-fossil thing-07" type="button" data-discovery="comet-stone" data-label="Comet stone" data-x="27" data-y="43" aria-label="Discover a comet stone"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Comet stone</span></button>
+            <button class="discovery-object discovery-thing thing-sprout thing-08" type="button" data-discovery="alien-footprint" data-label="Alien footprint" data-x="46" data-y="43" aria-label="Discover an alien footprint"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Alien footprint</span></button>
+            <button class="discovery-object discovery-thing thing-orb thing-09" type="button" data-discovery="glowing-pebble" data-label="Glowing pebble" data-x="64" data-y="43" aria-label="Discover a glowing pebble"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Glowing pebble</span></button>
+            <button class="discovery-object discovery-thing thing-star thing-10" type="button" data-discovery="cave-painting" data-label="Cave painting" data-x="83" data-y="43" aria-label="Discover a cave painting"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Cave painting</span></button>
+            <button class="discovery-object discovery-thing thing-gem thing-11" type="button" data-discovery="ring-rock" data-label="Ring rock" data-x="13" data-y="61" aria-label="Discover a ring rock"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Ring rock</span></button>
+            <button class="discovery-object discovery-thing thing-fossil thing-12" type="button" data-discovery="worm-tunnel" data-label="Worm tunnel" data-x="32" data-y="61" aria-label="Discover a worm tunnel"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Worm tunnel</span></button>
+            <button class="discovery-object discovery-thing thing-sprout thing-13" type="button" data-discovery="sky-seed" data-label="Sky seed" data-x="51" data-y="61" aria-label="Discover a sky seed"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Sky seed</span></button>
+            <button class="discovery-object discovery-thing thing-orb thing-14" type="button" data-discovery="lava-bubble" data-label="Lava bubble" data-x="70" data-y="61" aria-label="Discover a lava bubble"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Lava bubble</span></button>
+            <button class="discovery-object discovery-thing thing-star thing-15" type="button" data-discovery="tiny-moon" data-label="Tiny moon" data-x="88" data-y="61" aria-label="Discover a tiny moon"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Tiny moon</span></button>
+            <button class="discovery-object discovery-thing thing-gem thing-16" type="button" data-discovery="meteor-shard" data-label="Meteor shard" data-x="9" data-y="79" aria-label="Discover a meteor shard"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Meteor shard</span></button>
+            <button class="discovery-object discovery-thing thing-fossil thing-17" type="button" data-discovery="ancient-antenna" data-label="Ancient antenna" data-x="28" data-y="79" aria-label="Discover an ancient antenna"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Ancient antenna</span></button>
+            <button class="discovery-object discovery-thing thing-sprout thing-18" type="button" data-discovery="space-shell" data-label="Space shell" data-x="47" data-y="79" aria-label="Discover a space shell"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Space shell</span></button>
+            <button class="discovery-object discovery-thing thing-orb thing-19" type="button" data-discovery="red-moss" data-label="Red moss" data-x="66" data-y="79" aria-label="Discover red moss"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Red moss</span></button>
+            <button class="discovery-object discovery-thing thing-star thing-20" type="button" data-discovery="robot-clue" data-label="Robot clue" data-x="85" data-y="79" aria-label="Discover a robot clue"><span class="discovery-visual" aria-hidden="true"></span><span class="discovery-label">Robot clue</span></button>
+            <div class="explore-controls" aria-label="Walk controls">
+              <button class="move-button move-up" type="button" data-move="up" aria-label="Walk up">↑</button>
+              <button class="move-button move-left" type="button" data-move="left" aria-label="Walk left">←</button>
+              <button class="move-button move-down" type="button" data-move="down" aria-label="Walk down">↓</button>
+              <button class="move-button move-right" type="button" data-move="right" aria-label="Walk right">→</button>
+            </div>
+            <div class="walk-hint" aria-hidden="true">walk around to discover</div>
+            <div class="discovery-bubble" id="discoveryBubble" hidden><span>✦</span><strong>Discovered!</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="reader-footer">
+        <button class="nav-button back-button" id="prevButton" type="button" disabled>
+          <span aria-hidden="true">←</span> Back
+        </button>
+        <div class="reader-hint" id="interactionHint"><span aria-hidden="true">✦</span> Use ← →, swipe, or the buttons to turn the page</div>
+        <button class="nav-button next-button" id="nextButton" type="button">
+          Next <span aria-hidden="true">→</span>
+        </button>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
