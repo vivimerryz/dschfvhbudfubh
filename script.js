@@ -18,6 +18,8 @@
   const nextDrawStepButton = document.getElementById("nextDrawStepButton");
   const drawCanvas = document.getElementById("rocketCanvas");
   const drawContext = drawCanvas.getContext("2d");
+  const fillToolButton = document.getElementById("fillToolButton");
+  const drawColorInput = document.getElementById("drawColorInput");
   const drawPreview = document.getElementById("drawPreview");
   const editDrawingButton = document.getElementById("editDrawingButton");
   const rocketPreviewCanvas = document.getElementById("rocketPreviewCanvas");
@@ -49,7 +51,9 @@
   let currentDrawStep = 0;
   let activeStroke = null;
   let drawingCompleted = false;
+  let fillMode = false;
   const drawnStrokes = [];
+  const drawnFills = [];
   const drawingColors = ["#ff6da9", "#6b4df6", "#68b9ff", "#6ae0be", "#ff9b58", "#ffd54a"];
   const drawingSteps = [
     { title: "Draw the rocket body", instruction: "Start with one tall, rounded body in the middle." },
@@ -76,6 +80,7 @@
         drawingCompleted,
         currentDrawStep,
         drawnStrokes,
+        drawnFills,
         landed: spaceScene.classList.contains("landed")
       }));
     } catch (error) {
@@ -425,27 +430,96 @@
     drawContext.restore();
   }
 
-  function drawStoredStroke(stroke) {
+  function drawStoredStrokeTo(context, stroke) {
     if (!stroke.points.length) return;
-    drawContext.fillStyle = stroke.color;
-    drawContext.strokeStyle = stroke.color;
-    drawContext.lineWidth = 10;
-    drawContext.lineCap = "round";
-    drawContext.lineJoin = "round";
+    context.fillStyle = stroke.color;
+    context.strokeStyle = stroke.color;
+    context.lineWidth = 10;
+    context.lineCap = "round";
+    context.lineJoin = "round";
     if (stroke.points.length === 1) {
-      drawContext.beginPath();
-      drawContext.arc(stroke.points[0].x, stroke.points[0].y, 5, 0, Math.PI * 2);
-      drawContext.fill();
+      context.beginPath();
+      context.arc(stroke.points[0].x, stroke.points[0].y, 5, 0, Math.PI * 2);
+      context.fill();
       return;
     }
-    drawContext.beginPath();
-    drawContext.moveTo(stroke.points[0].x, stroke.points[0].y);
-    stroke.points.slice(1).forEach((point) => drawContext.lineTo(point.x, point.y));
-    drawContext.stroke();
+    context.beginPath();
+    context.moveTo(stroke.points[0].x, stroke.points[0].y);
+    stroke.points.slice(1).forEach((point) => context.lineTo(point.x, point.y));
+    context.stroke();
+  }
+
+  function drawStoredStroke(stroke) {
+    drawStoredStrokeTo(drawContext, stroke);
+  }
+
+  function hexToRgba(hex) {
+    const value = hex.replace("#", "");
+    const normalized = value.length === 3 ? value.split("").map((part) => part + part).join("") : value;
+    return [
+      Number.parseInt(normalized.slice(0, 2), 16),
+      Number.parseInt(normalized.slice(2, 4), 16),
+      Number.parseInt(normalized.slice(4, 6), 16),
+      255
+    ];
+  }
+
+  function samePixel(data, index, target, tolerance = 30) {
+    return Math.abs(data[index] - target[0]) <= tolerance
+      && Math.abs(data[index + 1] - target[1]) <= tolerance
+      && Math.abs(data[index + 2] - target[2]) <= tolerance
+      && Math.abs(data[index + 3] - target[3]) <= tolerance;
+  }
+
+  function fillContextAt(context, x, y, color) {
+    const width = context.canvas.width;
+    const height = context.canvas.height;
+    const startX = Math.max(0, Math.min(width - 1, Math.floor(x)));
+    const startY = Math.max(0, Math.min(height - 1, Math.floor(y)));
+    const image = context.getImageData(0, 0, width, height);
+    const data = image.data;
+    const startIndex = (startY * width + startX) * 4;
+    const target = [data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]];
+    const replacement = hexToRgba(color);
+    if (samePixel(data, startIndex, replacement, 0)) return false;
+
+    const stack = [startY * width + startX];
+    let filledPixels = 0;
+    while (stack.length) {
+      const pixel = stack.pop();
+      const pixelX = pixel % width;
+      const pixelY = Math.floor(pixel / width);
+      const index = pixel * 4;
+      if (!samePixel(data, index, target)) continue;
+      data[index] = replacement[0];
+      data[index + 1] = replacement[1];
+      data[index + 2] = replacement[2];
+      data[index + 3] = replacement[3];
+      filledPixels += 1;
+      if (pixelX > 0) stack.push(pixel - 1);
+      if (pixelX < width - 1) stack.push(pixel + 1);
+      if (pixelY > 0) stack.push(pixel - width);
+      if (pixelY < height - 1) stack.push(pixel + width);
+    }
+
+    if (!filledPixels) return false;
+    context.putImageData(image, 0, 0);
+    return true;
+  }
+
+  function renderCleanDrawing(context) {
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+    drawnStrokes.forEach((stroke) => drawStoredStrokeTo(context, stroke));
+    drawnFills.forEach((fill) => fillContextAt(context, fill.x, fill.y, fill.color));
+    drawnStrokes.forEach((stroke) => drawStoredStrokeTo(context, stroke));
   }
 
   function drawRocketGuide() {
     drawContext.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    drawContext.fillStyle = "#fffdf8";
+    drawContext.fillRect(0, 0, drawCanvas.width, drawCanvas.height);
+    drawnStrokes.forEach(drawStoredStroke);
+    drawnFills.forEach((fill) => fillContextAt(drawContext, fill.x, fill.y, fill.color));
     drawCurrentStepGuide();
     drawnStrokes.forEach(drawStoredStroke);
     if (activeStroke) drawStoredStroke(activeStroke);
@@ -462,7 +536,8 @@
   }
 
   function updateDrawStatus() {
-    document.getElementById("drawStatus").textContent = `${strokeCount} ${strokeCount === 1 ? "stroke" : "strokes"}`;
+    const fillText = drawnFills.length ? ` · ${drawnFills.length} ${drawnFills.length === 1 ? "fill" : "fills"}` : "";
+    document.getElementById("drawStatus").textContent = `${strokeCount} ${strokeCount === 1 ? "stroke" : "strokes"}${fillText}`;
   }
 
   function updateDrawButton(saved) {
@@ -472,8 +547,7 @@
   }
 
   function saveDrawingPreview() {
-    rocketPreviewContext.clearRect(0, 0, rocketPreviewCanvas.width, rocketPreviewCanvas.height);
-    rocketPreviewContext.drawImage(drawCanvas, 0, 0, rocketPreviewCanvas.width, rocketPreviewCanvas.height);
+    renderCleanDrawing(rocketPreviewContext);
     drawPreview.hidden = false;
     updateDrawButton(true);
   }
@@ -489,34 +563,36 @@
     const maxX = Math.max(...points.map((point) => point.x));
     const minY = Math.min(...points.map((point) => point.y));
     const maxY = Math.max(...points.map((point) => point.y));
+    renderCleanDrawing(rocketPreviewContext);
+    const cropPadding = 32;
+    const cropX = Math.max(0, minX - cropPadding);
+    const cropY = Math.max(0, minY - cropPadding);
+    const cropRight = Math.min(rocketPreviewCanvas.width, maxX + cropPadding);
+    const cropBottom = Math.min(rocketPreviewCanvas.height, maxY + cropPadding);
+    const sourceWidth = Math.max(1, cropRight - cropX);
+    const sourceHeight = Math.max(1, cropBottom - cropY);
     const padding = 24;
-    const sourceWidth = Math.max(1, maxX - minX);
-    const sourceHeight = Math.max(1, maxY - minY);
     const scale = Math.min(
       (drawnFlightRocket.width - padding * 2) / sourceWidth,
       (drawnFlightRocket.height - padding * 2) / sourceHeight
     );
-    const offsetX = (drawnFlightRocket.width - sourceWidth * scale) / 2 - minX * scale;
-    const offsetY = (drawnFlightRocket.height - sourceHeight * scale) / 2 - minY * scale;
+    const targetWidth = sourceWidth * scale;
+    const targetHeight = sourceHeight * scale;
+    const offsetX = (drawnFlightRocket.width - targetWidth) / 2;
+    const offsetY = (drawnFlightRocket.height - targetHeight) / 2;
     const flightContext = drawnFlightRocket.getContext("2d");
     flightContext.clearRect(0, 0, drawnFlightRocket.width, drawnFlightRocket.height);
-    drawnStrokes.forEach((stroke) => {
-      flightContext.strokeStyle = stroke.color;
-      flightContext.fillStyle = stroke.color;
-      flightContext.lineWidth = Math.max(5, 10 * scale);
-      flightContext.lineCap = "round";
-      flightContext.lineJoin = "round";
-      if (stroke.points.length === 1) {
-        flightContext.beginPath();
-        flightContext.arc(offsetX + stroke.points[0].x * scale, offsetY + stroke.points[0].y * scale, Math.max(4, 5 * scale), 0, Math.PI * 2);
-        flightContext.fill();
-        return;
-      }
-      flightContext.beginPath();
-      flightContext.moveTo(offsetX + stroke.points[0].x * scale, offsetY + stroke.points[0].y * scale);
-      stroke.points.slice(1).forEach((point) => flightContext.lineTo(offsetX + point.x * scale, offsetY + point.y * scale));
-      flightContext.stroke();
-    });
+    flightContext.drawImage(
+      rocketPreviewCanvas,
+      cropX,
+      cropY,
+      sourceWidth,
+      sourceHeight,
+      offsetX,
+      offsetY,
+      targetWidth,
+      targetHeight
+    );
   }
 
   function clearDrawing() {
@@ -524,7 +600,9 @@
     isDrawing = false;
     lastDrawPoint = null;
     activeStroke = null;
+    fillMode = false;
     drawnStrokes.length = 0;
+    drawnFills.length = 0;
     strokeCount = 0;
     currentDrawStep = 0;
     drawingCompleted = false;
@@ -533,6 +611,7 @@
     updateDrawStepUI();
     drawRocketGuide();
     updateDrawStatus();
+    updateFillMode();
     renderFlightDrawing();
     if (wasCompleted) updateBuildUI();
     persistProgress();
@@ -565,6 +644,30 @@
     drawRocketGuide();
   }
 
+  function updateFillMode() {
+    fillToolButton.setAttribute("aria-pressed", String(fillMode));
+    fillToolButton.textContent = fillMode ? "Bucket on ✓" : "Bucket fill";
+    drawCanvas.classList.toggle("fill-mode", fillMode);
+  }
+
+  function fillCanvasAtPointer(event) {
+    const point = canvasPoint(event);
+    const color = drawColorInput.value;
+    if (!fillContextAt(drawContext, point.x, point.y, color)) return;
+    drawnFills.push({ x: point.x, y: point.y, color });
+    drawRocketGuide();
+    updateDrawStatus();
+    persistProgress();
+  }
+
+  function handleCanvasPointerDown(event) {
+    if (fillMode) {
+      fillCanvasAtPointer(event);
+      return;
+    }
+    startDrawing(event);
+  }
+
   function continueDrawing(event) {
     if (!isDrawing || !activeStroke) return;
     const nextPoint = canvasPoint(event);
@@ -592,6 +695,10 @@
   });
   editDrawingButton.addEventListener("click", () => setDrawingOpen(true));
   clearDrawingButton.addEventListener("click", clearDrawing);
+  fillToolButton.addEventListener("click", () => {
+    fillMode = !fillMode;
+    updateFillMode();
+  });
   nextDrawStepButton.addEventListener("click", () => {
     if (currentDrawStep === drawingSteps.length - 1) {
       saveDrawingPreview();
@@ -606,7 +713,7 @@
     drawRocketGuide();
     persistProgress();
   });
-  drawCanvas.addEventListener("pointerdown", startDrawing);
+  drawCanvas.addEventListener("pointerdown", handleCanvasPointerDown);
   drawCanvas.addEventListener("pointermove", continueDrawing);
   drawCanvas.addEventListener("pointerup", stopDrawing);
   drawCanvas.addEventListener("pointercancel", stopDrawing);
@@ -813,6 +920,13 @@
         if (!stroke || typeof stroke.color !== "string" || !Array.isArray(stroke.points)) return;
         const points = stroke.points.filter((point) => Number.isFinite(point?.x) && Number.isFinite(point?.y));
         if (points.length) drawnStrokes.push({ color: stroke.color, points });
+      });
+    }
+    drawnFills.length = 0;
+    if (Array.isArray(saved.drawnFills)) {
+      saved.drawnFills.forEach((fill) => {
+        if (!fill || !Number.isFinite(fill.x) || !Number.isFinite(fill.y) || typeof fill.color !== "string") return;
+        drawnFills.push({ x: fill.x, y: fill.y, color: fill.color });
       });
     }
     strokeCount = drawnStrokes.length;

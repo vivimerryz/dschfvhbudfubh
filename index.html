@@ -288,9 +288,13 @@
               </div>
               <div class="canvas-wrap">
                 <canvas id="rocketCanvas" width="720" height="420" aria-label="Drawing pad for drawing a rocket"></canvas>
-                <span class="canvas-tip">Start drawing here!</span>
+                <span class="canvas-tip">Draw first, then use Bucket fill!</span>
               </div>
               <div class="draw-tools">
+                <div class="draw-tool-group">
+                  <button class="draw-fill" id="fillToolButton" type="button" aria-pressed="false">Bucket fill</button>
+                  <label class="draw-color-label" for="drawColorInput">Color <input id="drawColorInput" type="color" value="#ff6da9" aria-label="Choose a fill color" /></label>
+                </div>
                 <button class="draw-clear" id="clearDrawingButton" type="button">Clear drawing</button>
                 <span id="drawStatus">0 strokes</span>
                 <button class="draw-next" id="nextDrawStepButton" type="button">Next step <span aria-hidden="true">→</span></button>

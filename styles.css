@@ -516,3 +516,20 @@ button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
   .pack-box { right: 3%; bottom: 5%; width: 112px; height: 65px; transform: scale(0.78) rotate(3deg); transform-origin: bottom right; }.pack-box::before { width: 112px; }.pack-box-handle { left: 34px; }.pack-box-label { font-size: 0.56rem; }.pack-seal { left: 36px; width: 32px; height: 80px; }
   .pack-box.sealed { transform: scale(0.82) rotate(-3deg); }
 }
+
+/* Bucket-fill controls for the rocket drawing activity. */
+.draw-tool-group { display: flex; align-items: center; gap: 8px; }
+.draw-fill { min-height: 38px; padding: 0 12px; border: 2px solid rgba(107,77,246,0.18); border-radius: 11px; color: var(--purple); background: #fff; font-size: 0.68rem; font-weight: 900; transition: color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease; }
+.draw-fill:hover { border-color: var(--pink); color: var(--pink); }
+.draw-fill[aria-pressed="true"] { border-color: var(--pink); color: #fff; background: var(--pink); box-shadow: 0 0 0 4px rgba(255,109,169,0.16); }
+.draw-color-label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 0.62rem; font-weight: 900; }
+#drawColorInput { width: 30px; height: 30px; padding: 2px; border: 2px solid rgba(107,77,246,0.18); border-radius: 8px; background: #fff; cursor: pointer; }
+#rocketCanvas.fill-mode { cursor: cell; }
+
+@media (max-width: 540px) {
+  .draw-tools { flex-wrap: wrap; }
+  .draw-tool-group { order: 1; width: 100%; justify-content: space-between; }
+  .draw-clear { order: 2; }
+  #drawStatus { order: 3; }
+  .draw-next { order: 4; }
+}
